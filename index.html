@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蝉妈妈选品简报 - 抖音销量榜</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-size: 16px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .meta-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .meta-item {
+            background: #f8f9fa;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        .meta-item .label { font-size: 14px; color: #666; }
+        .meta-item .value { font-size: 18px; color: #333; font-weight: 600; margin-top: 5px; }
+        .section-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        .recommendation-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 35px;
+            margin: 25px 0;
+        }
+        .recommendation-box h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .reason-list {
+            list-style: none;
+            padding: 0;
+            font-size: 18px;
+        }
+        .reason-list li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .reason-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .product-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        .product-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .product-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .product-title { font-size: 22px; color: #333; flex: 1; }
+        .product-image {
+            width: 220px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin: 20px 0;
+        }
+        .data-item {
+            background: white;
+            padding: 18px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .data-item .label { font-size: 15px; color: #666; }
+        .data-item .value { font-size: 20px; color: #333; font-weight: bold; margin-top: 8px; }
+        .highlight { color: #667eea; }
+        .positive { color: #52c41a; }
+        .detail-link {
+            background: #f0f5ff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 15px;
+        }
+        .detail-link a {
+            color: #667eea;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .detail-link a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 17px;
+        }
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        th {
+            background: #f0f5ff;
+            color: #667eea;
+            font-weight: 600;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+        }
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .summary-card .number { font-size: 32px; font-weight: bold; margin-bottom: 8px; }
+        .summary-card .label { font-size: 15px; opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 蝉妈妈选品简报 - 抖音销量榜</h1>
+            <div class="meta-info">
+                <div class="meta-item">
+                    <div class="label">数据来源</div>
+                    <div class="value">抖音销量榜</div>
+                </div>
+                <div class="meta-item">
+                    <div class="label">生成时间</div>
+                    <div class="value">2026-03-08</div>
+                </div>
+                <div class="meta-item">
+                    <div class="label">筛选条件</div>
+                    <div class="value">佣金≥25% & 转化率≥20%</div>
+                </div>
+                <div class="meta-item">
+                    <div class="label">最终推荐</div>
+                    <div class="value" style="color: #667eea; font-size: 22px;">1款</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h2 class="section-title">🏆 最终推荐</h2>
+            <div class="recommendation-box">
+                <h3>芈茵美眼部淡纹抗皱黄芪精华孢子油</h3>
+                <ul class="reason-list">
+                    <li>佣金率40% - 5款中最高，单佣收益最大</li>
+                    <li>周销量10w~25w - 市场需求旺盛，已验证爆款</li>
+                    <li>个护护肤品类 - 契合2025"悦己"消费趋势</li>
+                    <li>眼部精华细分 - 差异化明显，有故事可讲</li>
+                    <li>黄芪成分 - 天然草本，易建立信任</li>
+                    <li>转化稳定20% - 已验证有效，降低试错成本</li>
+                </ul>
+            </div>
+            <div style="text-align: center; margin-top: 25px;">
+                <img src="images/product_1.jpg" class="product-image" style="width: 300px;">
+            </div>
+            <div class="detail-link">
+                <strong>蝉妈妈详情页（点击打开）：</strong><br>
+                <a href="https://www.chanmama.com/promotionRank/NEez4hBwjdn3VjSBwoAhcDIUGRrNohgz.html" target="_blank">
+                    https://www.chanmama.com/promotionRank/NEez4hBwjdn3VjSBwoAhcDIUGRrNohgz.html
+                </a>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h2 class="section-title">📊 5款选品综合评估</h2>
+            <table>
+                <tr>
+                    <th>排名</th>
+                    <th>商品</th>
+                    <th>佣金</th>
+                    <th>转化率</th>
+                    <th>周销量</th>
+                    <th>评分</th>
+                </tr>
+                <tr style="background: #f0f5ff;">
+                    <td><strong>1</strong></td>
+                    <td>芈茵美眼部精华</td>
+                    <td class="positive">40%</td>
+                    <td>20%</td>
+                    <td>10w~25w</td>
+                    <td>★★★★★</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>倾颜氨基酸洁面慕斯</td>
+                    <td class="positive">40%</td>
+                    <td>20%</td>
+                    <td>2.5w~5w</td>
+                    <td>★★★★☆</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>宝督性感蕾丝内衣</td>
+                    <td>25%</td>
+                    <td class="positive">30%</td>
+                    <td>2.5w~5w</td>
+                    <td>★★★☆☆</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>资莱皙美白洗面奶</td>
+                    <td>29%</td>
+                    <td>20%</td>
+                    <td>2.5w~5w</td>
+                    <td>★★★☆☆</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>2026新款蓝牙耳机</td>
+                    <td>30%</td>
+                    <td>20%</td>
+                    <td>2.5w~5w</td>
+                    <td>★★☆☆☆</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section-card">
+            <h2 class="section-title">📋 所有商品详情（带图片）</h2>
+            
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">1</div>
+                    <div class="product-title">芈茵美眼部淡纹抗皱黄芪精华孢子油（★推荐）</div>
+                </div>
+                <img src="images/product_1.jpg" class="product-image">
+                <div class="data-grid">
+                    <div class="data-item"><div class="label">佣金</div><div class="value highlight">40%</div></div>
+                    <div class="data-item"><div class="label">转化率</div><div class="value">20%</div></div>
+                    <div class="data-item"><div class="label">周销量</div><div class="value">10w~25w</div></div>
+                </div>
+                <div class="detail-link">
+                    <strong>点击打开详情页：</strong><br>
+                    <a href="https://www.chanmama.com/promotionRank/NEez4hBwjdn3VjSBwoAhcDIUGRrNohgz.html" target="_blank">
+                        👉 https://www.chanmama.com/promotionRank/NEez4hBwjdn3VjSBwoAhcDIUGRrNohgz.html
+                    </a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">2</div>
+                    <div class="product-title">倾颜氨基酸净澈洁面慕斯</div>
+                </div>
+                <img src="images/product_2.jpg" class="product-image">
+                <div class="data-grid">
+                    <div class="data-item"><div class="label">佣金</div><div class="value highlight">40%</div></div>
+                    <div class="data-item"><div class="label">转化率</div><div class="value">20%</div></div>
+                    <div class="data-item"><div class="label">周销量</div><div class="value">2.5w~5w</div></div>
+                </div>
+                <div class="detail-link">
+                    <strong>点击打开详情页：</strong><br>
+                    <a href="https://www.chanmama.com/promotionRank/6VhqxZuRlIrrl0ywgZJmkQ4G0sGOWc2P.html" target="_blank">
+                        👉 https://www.chanmama.com/promotionRank/6VhqxZuRlIrrl0ywgZJmkQ4G0sGOWc2P.html
+                    </a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">3</div>
+                    <div class="product-title">宝督性感蕾丝大码女士聚拢内衣</div>
+                </div>
+                <img src="images/product_3.jpg" class="product-image">
+                <div class="data-grid">
+                    <div class="data-item"><div class="label">佣金</div><div class="value">25%</div></div>
+                    <div class="data-item"><div class="label">转化率</div><div class="value highlight">30%</div></div>
+                    <div class="data-item"><div class="label">周销量</div><div class="value">2.5w~5w</div></div>
+                </div>
+                <div class="detail-link">
+                    <strong>点击打开详情页：</strong><br>
+                    <a href="https://www.chanmama.com/promotionRank/bmFt3big9KFs1Ez406x3B64QlYx7IPV0.html" target="_blank">
+                        👉 https://www.chanmama.com/promotionRank/bmFt3big9KFs1Ez406x3B64QlYx7IPV0.html
+                    </a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">4</div>
+                    <div class="product-title">资莱皙美白烟酰胺洗面奶</div>
+                </div>
+                <img src="images/product_4.jpg" class="product-image">
+                <div class="data-grid">
+                    <div class="data-item"><div class="label">佣金</div><div class="value">29%</div></div>
+                    <div class="data-item"><div class="label">转化率</div><div class="value">20%</div></div>
+                    <div class="data-item"><div class="label">周销量</div><div class="value">2.5w~5w</div></div>
+                </div>
+                <div class="detail-link">
+                    <strong>点击打开详情页：</strong><br>
+                    <a href="https://www.chanmama.com/promotionRank/-1Dm5yy4eH7ydd7d6wkxwYk1tvNNQhHm.html" target="_blank">
+                        👉 https://www.chanmama.com/promotionRank/-1Dm5yy4eH7ydd7d6wkxwYk1tvNNQhHm.html
+                    </a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">5</div>
+                    <div class="product-title">2026新款耳夹式睡眠无线蓝牙耳机</div>
+                </div>
+                <img src="images/product_5.jpg" class="product-image">
+                <div class="data-grid">
+                    <div class="data-item"><div class="label">佣金</div><div class="value">30%</div></div>
+                    <div class="data-item"><div class="label">转化率</div><div class="value">20%</div></div>
+                    <div class="data-item"><div class="label">周销量</div><div class="value">2.5w~5w</div></div>
+                </div>
+                <div class="detail-link">
+                    <strong>点击打开详情页：</strong><br>
+                    <a href="https://www.chanmama.com/promotionRank/WBsGzaWqyheae3FyULgOIzyprvrCsDsr.html" target="_blank">
+                        👉 https://www.chanmama.com/promotionRank/WBsGzaWqyheae3FyULgOIzyprvrCsDsr.html
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h2 class="section-title">❌ 不推荐其他4款的原因</h2>
+            
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">2</div>
+                    <div class="product-title">倾颜氨基酸净澈洁面慕斯</div>
+                </div>
+                <p style="font-size: 17px; line-height: 1.8; color: #555;">
+                    <strong style="color: #ff4d4f;">不推荐原因：</strong>洁面赛道竞争激烈，氨基酸洁面已红海化，差异化不足，新手难以突围。
+                </p>
+            </div>
+
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">3</div>
+                    <div class="product-title">宝督性感蕾丝大码女士聚拢内衣</div>
+                </div>
+                <p style="font-size: 17px; line-height: 1.8; color: #555;">
+                    <strong style="color: #ff4d4f;">不推荐原因：</strong>内衣类目退货率高（约30%），尺码问题多，新手处理售后困难，影响账号评分。
+                </p>
+            </div>
+
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">4</div>
+                    <div class="product-title">资莱皙美白烟酰胺洗面奶</div>
+                </div>
+                <p style="font-size: 17px; line-height: 1.8; color: #555;">
+                    <strong style="color: #ff4d4f;">不推荐原因：</strong>佣金较低（29%），美白功效宣传有审核风险，易违规限流，不适合新手。
+                </p>
+            </div>
+
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-number">5</div>
+                    <div class="product-title">2026新款耳夹式睡眠无线蓝牙耳机</div>
+                </div>
+                <p style="font-size: 17px; line-height: 1.8; color: #555;">
+                    <strong style="color: #ff4d4f;">不推荐原因：</strong>3C类目需专业度，售后复杂（质量问题、兼容性问题），新手难以应对。
+                </p>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h2 class="section-title">📈 汇总分析</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="number">5</div>
+                    <div class="label">筛选商品数</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number">32.8%</div>
+                    <div class="label">平均佣金率</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number">22%</div>
+                    <div class="label">平均转化率</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number">40%</div>
+                    <div class="label">最高佣金率</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number">1</div>
+                    <div class="label">最终推荐</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
